@@ -17,6 +17,7 @@ export default function Main(props) {
                 setUserDescription(userInformation.about)
                 setUserAvatar(userInformation.avatar)
             })
+            .catch((err)=>{console.log(err)});
     }, [])
 
 
@@ -26,6 +27,7 @@ export default function Main(props) {
             .then(cards=>{
                 setCards(cards)
             })
+            .catch((err)=>{console.log(err)});
     }, [])
 
 
@@ -50,7 +52,7 @@ export default function Main(props) {
             </section>
         <section className="elements">
             {cards.map((card, i)=>(
-                <Card card={card} key={i} handleCardClick={props.onCardClick}/>
+                <Card card={card} key={card._id} handleCardClick={props.onCardClick}/>
             ))}
         </section>
         </main>)
