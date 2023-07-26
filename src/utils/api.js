@@ -56,20 +56,19 @@ class Api {
             .then(this._getJSON);
     }
 
-    likeCard(id){
-        return fetch(`${this._basePath}cards/${id}/likes`, {
-            method: "PUT",
-            headers: this._getHeaders(),
-        })
-            .then(this._getJSON);
-    }
+    changeLikeCardStatus(id, isLiked){
+        let method;
+        if (isLiked){
+            method = "DELETE"
+        }
 
-    deleteLike(id){
+        else {method="PUT"}
         return fetch(`${this._basePath}cards/${id}/likes`, {
-            method: "DELETE",
+            method: method,
             headers: this._getHeaders(),
         })
             .then(this._getJSON);
+
     }
 
     saveAvatar(data){

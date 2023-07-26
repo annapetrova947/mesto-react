@@ -4,6 +4,11 @@ import Main from "./Main.js";
 import Footer from "./Footer.js";
 import PopupWithForm from "./PopupWithForm.js";
 import ImagePopup from "./ImagePopup.js";
+import {api} from "../utils/api";
+import {CurrentUserContext} from "../contexts/CurrentUserContext.js";
+import EditProfilePopup from "./EditProfilePopup.js";
+import EditAvatarPopup from "./EditAvatarPopup.js";
+import AddPlacePopup from "./AddPlacePopup";
 
 function App() {
 
@@ -12,6 +17,28 @@ function App() {
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false)
     const [isImagePopupOpen, setIsImagePopupOpen] = React.useState(false)
     const [selectedCard, setSelectedCard] = React.useState(null)
+    const [currentUser, setCurrentUser] = React.useState({})
+    const [cards, setCards] = React.useState([])
+
+
+    React.useEffect(()=>{
+        api.getCards()
+            .then(cards=>{
+                setCards(cards)
+            })
+            .catch((err)=>{console.log(err)});
+    }, [])
+
+    React.useEffect(()=>{
+        api.getProfileInformation()
+            .then(userInformation=>{
+                setCurrentUser(userInformation)
+
+            })
+            .catch((err)=>{console.log(err)});
+    }, [])
+
+
 
     function handleEditAvatarClick(){
         setIsEditAvatarPopupOpen(true)
@@ -32,6 +59,59 @@ function App() {
         setIsImagePopupOpen(true)
     }
 
+    function handleCardLike(card) {
+
+        const isLiked = card.likes.some(i => i._id === currentUser._id);
+
+
+        api.changeLikeCardStatus(card._id, isLiked)
+            .then((newCard) => {
+            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        })
+            .catch((err)=>{console.log(err)});
+    }
+
+    function handleUpdateUser(data){
+        api.saveProfileInfo(data)
+            .then((data)=>{
+                setCurrentUser(data)
+            })
+            .then(()=>{
+                closeAllPopups()
+            })
+            .catch((err)=>{console.log(err)});
+    }
+
+    function handleUpdateAvatar(data){
+        api.saveAvatar(data)
+            .then((data)=>{
+                setCurrentUser(data)
+            })
+            .then(()=>{
+                closeAllPopups()
+            })
+            .catch((err)=>{console.log(err)});
+    }
+
+    function handleCardDelete(card){
+        api.deleteCard(card._id)
+            .then(()=>{
+                setCards((data) => data.filter((p) => p._id !== card._id));
+            })
+            .catch((err)=>{console.log(err)});
+
+    }
+
+    function handleAddCard(data){
+        api.createCard(data)
+            .then((data)=>{
+                setCards([data, ...cards])
+            })
+            .then(()=>{
+                closeAllPopups()
+            })
+            .catch((err)=>{console.log(err)});
+    }
 
     function closeAllPopups(){
         setIsEditAvatarPopupOpen(false)
@@ -44,64 +124,27 @@ function App() {
   return (
       <div className="root">
         <div className="page">
+            <CurrentUserContext.Provider value={currentUser}>
           <Header />
-          <Main onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} />
+          <Main
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onEditAvatar={handleEditAvatarClick}
+              onCardClick={handleCardClick}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
+              cards = {cards}
+          />
           <Footer />
-          {/* The Modal for edit profile*/}
-          <PopupWithForm name='edit' title='Редактировать профиль' save_button='Сохранить' isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
-            <input id="name" type="text" name="name" className="form__input form__input_type_name" required
-                   minLength="2" maxLength="40" />
-              <span className="form__input-error" id="name-error"/>
-              <input id="about" type="text" name="about" className="form__input form__input_type_about" required
-                     minLength="2" maxLength="200" />
-                <span className="form__input-error" id="about-error"/>
-          </PopupWithForm>
 
-          {/* The Modal ends */}
-          {/* The Modal for edit profile*/}
-          <PopupWithForm name='edit-avatar' title='Обновить аватар' save_button='Сохранить' isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
-                <input
-                    id="avatar_link"
-                    type="url"
-                    name="avatar"
-                    className="form__input form__input_type_avatar-link"
-                    placeholder="Ссылка на аватар"
-                    required=""
-                />
-                <span className="form__input-error" id="avatar_link-error" />
+                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
 
-        </PopupWithForm>
-          {/* The Modal ends */}
-          {/* The Modal for add new card*/}
-          <PopupWithForm name='add' title='Новое место' save_button='Создать' isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
-                <input
-                    id="place_name"
-                    type="text"
-                    name="name"
-                    className="form__input form__input_type_placename"
-                    placeholder="Название"
-                    required=""
-                    minLength={2}
-                    maxLength={30}
-                />
-                <span className="form__input-error" id="place_name-error" />
-                <input
-                    id="link"
-                    type="url"
-                    name="link"
-                    className="form__input form__input_type_link"
-                    placeholder="Ссылка на картинку"
-                    required=""
-                />
-                <span className="form__input-error" id="link-error" />
+                <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
 
-          </PopupWithForm>
+                <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleAddCard}/>
 
-          {/* The Modal ends */}
-          {/* The Modal for photo*/}
+
           <ImagePopup card={selectedCard} isOpen={isImagePopupOpen} onClose={closeAllPopups}/>
-          {/* The Modal ends */}
-          {/* The Modal for delete*/}
             <PopupWithForm name='delete' title='Вы уверены?' save_button='Да'  onClose={closeAllPopups}/>
           <div id="modal_delete" className="modal modal_type_delete">
             <div className="modal__form">
@@ -114,7 +157,8 @@ function App() {
               </form>
             </div>
           </div>
-          {/* The Modal ends */}
+
+            </CurrentUserContext.Provider >
         </div>
         <template className="element_template" />
       </div>
