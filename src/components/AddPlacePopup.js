@@ -6,14 +6,19 @@ export default function AddPlacePopup(props) {
     const refInputName = React.useRef();
     const refInputLink = React.useRef();
 
-    function handleSubmit(e){
+    React.useEffect(() => {
+        refInputName.current.value=''
+        refInputLink.current.value=''
+    }, [props.isOpen ]);
+
+
+        function handleSubmit(e){
         e.preventDefault();
         props.onUpdateAvatar({
             name: refInputName.current.value,
             link: refInputLink.current.value
         });
-        refInputName.current.value=''
-        refInputLink.current.value=''
+
     }
 
     return(

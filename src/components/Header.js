@@ -9,6 +9,7 @@ export default function Header() {
                 alt="Логотип"
                 className="header__logo"
             />
-        </header>)
+        </header>
+        )
 
     }
