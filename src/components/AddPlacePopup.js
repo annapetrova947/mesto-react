@@ -12,7 +12,7 @@ export default function AddPlacePopup(props) {
     }, [props.isOpen ]);
 
 
-        function handleSubmit(e){
+    function handleSubmit(e){
         e.preventDefault();
         props.onUpdateAvatar({
             name: refInputName.current.value,

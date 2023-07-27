@@ -125,40 +125,25 @@ function App() {
       <div className="root">
         <div className="page">
             <CurrentUserContext.Provider value={currentUser}>
-          <Header />
-          <Main
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onEditAvatar={handleEditAvatarClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-              cards = {cards}
-          />
-          <Footer />
+                <Header />
+                <Main
+                      onEditProfile={handleEditProfileClick}
+                      onAddPlace={handleAddPlaceClick}
+                      onEditAvatar={handleEditAvatarClick}
+                      onCardClick={handleCardClick}
+                      onCardLike={handleCardLike}
+                      onCardDelete={handleCardDelete}
+                      cards = {cards}
+                />
+                <Footer />
 
-          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
-          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
-          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleAddCard}/>
-
-
-          <ImagePopup card={selectedCard} isOpen={isImagePopupOpen} onClose={closeAllPopups}/>
-            <PopupWithForm name='delete' title='Вы уверены?' save_button='Да'  onClose={closeAllPopups}/>
-          <div id="modal_delete" className="modal modal_type_delete">
-            <div className="modal__form">
-              <button className="modal__close" type="button" />
-              <form className="form form_delete" name="add_delete">
-                <h3 className="form__question">Вы уверены?</h3>
-                <button type="submit" className="form__submit-button">
-                  Да
-                </button>
-              </form>
-            </div>
-          </div>
-
+                <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
+                <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
+                <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleAddCard}/>
+                <ImagePopup card={selectedCard} isOpen={isImagePopupOpen} onClose={closeAllPopups}/>
+                <PopupWithForm name='delete' title='Вы уверены?' save_button='Да'  onClose={closeAllPopups}/>
             </CurrentUserContext.Provider >
         </div>
-        <template className="element_template" />
       </div>
 
   );
